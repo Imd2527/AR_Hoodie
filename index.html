@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
     <!-- A-Frame + MindAR -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
@@ -14,21 +14,34 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
-        background: #000;
+        background: transparent;
+      }
+      a-scene {
+        width: 100%;
+        height: 100%;
       }
     </style>
   </head>
+
   <body>
     <a-scene
-      mindar-image="imageTargetSrc: image0-preview.mind; autoStart: true;"
+      mindar-image="imageTargetSrc: image0-preview.mind;"
+      color-space="sRGB"
+      renderer="colorManagement: true; physicallyCorrectLights: true;"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: true"
       embedded
     >
+
+      <!-- CAMERA -->
+      <a-camera look-controls="enabled: false"></a-camera>
+
+      <!-- ASSETS -->
       <a-assets>
         <video
           id="ar-video"
           src="Video.mp4"
+          autoplay="false"
           loop="true"
           muted="true"
           playsinline="true"
@@ -36,30 +49,36 @@
         ></video>
       </a-assets>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
+      <!-- TRACKED IMAGE TARGET -->
       <a-entity mindar-image-target="targetIndex: 0">
+
+        <!-- Video plane attached to the image -->
         <a-video
           src="#ar-video"
           width="1"
-          height="0.56"
+          height="1.4"
           position="0 0 0"
+          rotation="0 0 0"
         ></a-video>
+
       </a-entity>
+
     </a-scene>
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        const scene = document.querySelector("a-scene");
         const video = document.querySelector("#ar-video");
 
-        document.querySelector("a-scene").addEventListener("targetFound", () => {
+        scene.addEventListener("targetFound", () => {
           video.play();
         });
 
-        document.querySelector("a-scene").addEventListener("targetLost", () => {
+        scene.addEventListener("targetLost", () => {
           video.pause();
         });
       });
     </script>
+
   </body>
 </html>
